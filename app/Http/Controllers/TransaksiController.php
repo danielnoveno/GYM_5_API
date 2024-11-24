@@ -7,88 +7,178 @@ use Illuminate\Http\Request;
 
 class TransaksiController extends Controller
 {
+    /**
+     * Display a listing of the transactions.
+     */
     public function index(Request $request)
     {
-        $query = Transaksi::query();
+        try {
+            $query = Transaksi::query();
 
-        if ($request->has('search')) {
-            $query->where('metode_pembayaran', 'like', '%' . $request->search . '%')
-                ->orWhere('status_pembayaran', 'like', '%' . $request->search . '%');
+            // Pencarian berdasarkan metode pembayaran atau status pembayaran
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where('metode_pembayaran', 'like', '%' . $search . '%')
+                    ->orWhere('status_pembayaran', 'like', '%' . $search . '%');
+            }
+
+            $transaksis = $query->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Transactions fetched successfully',
+                'data' => $transaksis
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error fetching transactions',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $transaksis = $query->get();
-
-        return response()->json($transaksis);
     }
 
+    /**
+     * Store a newly created transaction.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'tanggal_transaksi' => 'required|date',
-            'jumlah_transaksi' => 'required|numeric',
-            'metode_pembayaran' => 'required|string',
-            'status_pembayaran' => 'required|string',
-            'id_layanan' => 'required|exists:layanan,id_layanan',
-            'id_pelanggan' => 'required|exists:pelanggan,id_pelanggan',
-        ]);
+        try {
+            // Validasi data input
+            $validated = $request->validate([
+                'tanggal_transaksi' => 'required|date',
+                'jumlah_transaksi' => 'required|numeric',
+                'metode_pembayaran' => 'required|string',
+                'status_pembayaran' => 'required|string',
+                'id_layanan' => 'required|exists:layanans,id_layanan',
+                'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
+            ]);
 
-        $transaksi = Transaksi::create([
-            'tanggal_transaksi' => $request->tanggal_transaksi,
-            'jumlah_transaksi' => $request->jumlah_transaksi,
-            'metode_pembayaran' => $request->metode_pembayaran,
-            'status_pembayaran' => $request->status_pembayaran,
-            'id_layanan' => $request->id_layanan,
-            'id_pelanggan' => $request->id_pelanggan,
-        ]);
+            // Membuat transaksi baru
+            $transaksi = Transaksi::create($validated);
 
-        return response()->json($transaksi, 201);
+            return response()->json([
+                'status' => true,
+                'message' => 'Transaction created successfully',
+                'data' => $transaksi
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error storing transaction',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
+    /**
+     * Display the specified transaction.
+     */
     public function show($id)
     {
-        $transaksi = Transaksi::find($id);
+        try {
+            $transaksi = Transaksi::find($id);
 
-        if (!$transaksi) {
-            return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
+            if ($transaksi) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Transaction found',
+                    'data' => $transaksi
+                ], 200);
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Transaction not found'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error fetching transaction',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json($transaksi);
     }
 
+    /**
+     * Update the specified transaction.
+     */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'tanggal_transaksi' => 'required|date',
-            'jumlah_transaksi' => 'required|numeric',
-            'metode_pembayaran' => 'required|string',
-            'status_pembayaran' => 'required|string',
-        ]);
+        try {
+            $transaksi = Transaksi::find($id);
 
-        $transaksi = Transaksi::find($id);
+            if (!$transaksi) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Transaction not found'
+                ], 404);
+            }
 
-        if (!$transaksi) {
-            return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
+            // Validasi data input
+            $validated = $request->validate([
+                'tanggal_transaksi' => 'required|date',
+                'jumlah_transaksi' => 'required|numeric',
+                'metode_pembayaran' => 'required|string',
+                'status_pembayaran' => 'required|string',
+            ]);
+
+            // Update transaksi
+            $transaksi->update($validated);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Transaction updated successfully',
+                'data' => $transaksi
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error updating transaction',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $transaksi->update([
-            'tanggal_transaksi' => $request->tanggal_transaksi,
-            'jumlah_transaksi' => $request->jumlah_transaksi,
-            'metode_pembayaran' => $request->metode_pembayaran,
-            'status_pembayaran' => $request->status_pembayaran,
-        ]);
-
-        return response()->json($transaksi);
     }
 
+    /**
+     * Remove the specified transaction.
+     */
     public function destroy($id)
     {
-        $transaksi = Transaksi::find($id);
+        try {
+            $transaksi = Transaksi::find($id);
 
-        if (!$transaksi) {
-            return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
+            if (!$transaksi) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Transaction not found'
+                ], 404);
+            }
+
+            $transaksi->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Transaction deleted successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error deleting transaction',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $transaksi->delete();
-
-        return response()->json(['message' => 'Transaksi berhasil dihapus']);
     }
 }

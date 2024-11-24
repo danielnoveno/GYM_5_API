@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ReviewTrainer extends Model
 {
     use HasFactory;
+
     protected $table = 'review_trainers';
 
     protected $primaryKey = 'id_review';
@@ -19,11 +20,17 @@ class ReviewTrainer extends Model
         'review',
     ];
 
+    /**
+     * Relasi ke model Trainer.
+     */
     public function trainer()
     {
         return $this->belongsTo(Trainer::class, 'id_trainer');
     }
 
+    /**
+     * Relasi ke model Pelanggan.
+     */
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'id_pelanggan');

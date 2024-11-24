@@ -7,54 +7,160 @@ use Illuminate\Http\Request;
 
 class PelangganController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        $pelanggans = Pelanggan::all();
-        return response()->json($pelanggans);
+        try {
+            $pelanggans = Pelanggan::all();
+            return response()->json([
+                'status' => true,
+                'message' => 'Pelanggan fetched successfully',
+                'data' => $pelanggans
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error fetching data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function show($id)
     {
-        $pelanggans = Pelanggan::find($id);
-        if ($pelanggans) {
-            return response()->json($pelanggans);
+        try {
+            $pelanggan = Pelanggan::find($id);
+            if ($pelanggan) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Pelanggan found',
+                    'data' => $pelanggan
+                ], 200);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => 'Pelanggan not found'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error fetching data',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return response()->json(['message' => 'Pelanggan not found'], 404);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama' => 'required|string',
-            'umur' => 'required|integer',
-            'alamat' => 'required|string',
-            'no_telepon' => 'required|string',
-            'email' => 'required|email',
-            'id_jadwal' => 'required|integer'
-        ]);
+        try {
+            $validated = $request->validate([
+                'nama' => 'required|string|max:255',
+                'umur' => 'required|integer',
+                'alamat' => 'required|string|max:255',
+                'no_telepon' => 'required|string|max:15',
+                'email' => 'required|email|max:255',
+                'id_jadwal' => 'required|integer|exists:jadwals,id_jadwal', // Assuming 'jadwals' table exists
+            ]);
 
-        $pelanggans = Pelanggan::create($request->all());
+            $pelanggan = Pelanggan::create($validated);
 
-        return response()->json($pelanggans, 201);
+            return response()->json([
+                'status' => true,
+                'message' => 'Pelanggan created successfully',
+                'data' => $pelanggan
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error storing data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, $id)
     {
-        $pelanggans = Pelanggan::find($id);
-        if ($pelanggans) {
-            $pelanggans->update($request->all());
-            return response()->json($pelanggans);
+        try {
+            $pelanggan = Pelanggan::find($id);
+            if ($pelanggan) {
+                $validated = $request->validate([
+                    'nama' => 'required|string|max:255',
+                    'umur' => 'required|integer',
+                    'alamat' => 'required|string|max:255',
+                    'no_telepon' => 'required|string|max:15',
+                    'email' => 'required|email|max:255',
+                    'id_jadwal' => 'required|integer|exists:jadwals,id_jadwal', // Assuming 'jadwals' table exists
+                ]);
+
+                $pelanggan->update($validated);
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Pelanggan updated successfully',
+                    'data' => $pelanggan
+                ], 200);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => 'Pelanggan not found'
+            ], 404);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error updating data',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return response()->json(['message' => 'Pelanggan not found'], 404);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
-        $pelanggans = Pelanggan::find($id);
-        if ($pelanggans) {
-            $pelanggans->delete();
-            return response()->json(['message' => 'Pelanggan deleted']);
+        try {
+            $pelanggan = Pelanggan::find($id);
+            if ($pelanggan) {
+                $pelanggan->delete();
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Pelanggan deleted successfully'
+                ], 200);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => 'Pelanggan not found'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error deleting data',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return response()->json(['message' => 'Pelanggan not found'], 404);
     }
 }

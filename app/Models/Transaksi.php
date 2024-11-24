@@ -11,25 +11,35 @@ class Transaksi extends Model
 
     protected $table = 'transaksis';
     protected $primaryKey = 'id_transaksi';
+
     protected $fillable = [
         'tanggal_transaksi',
         'jumlah_transaksi',
         'metode_pembayaran',
         'status_pembayaran',
         'id_layanan',
-        'id_detail_transaksi',
+        'id_pelanggan'
     ];
 
+    /**
+     * Relasi ke model Pelanggan.
+     */
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
     }
 
+    /**
+     * Relasi ke model Layanan.
+     */
     public function layanan()
     {
         return $this->belongsTo(Layanan::class, 'id_layanan');
     }
 
+    /**
+     * Relasi ke DetailTransaksi.
+     */
     public function detailTransaksi()
     {
         return $this->hasMany(DetailTransaksi::class, 'id_transaksi');

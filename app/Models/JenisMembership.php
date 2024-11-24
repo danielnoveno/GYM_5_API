@@ -11,12 +11,13 @@ class JenisMembership extends Model
 
     protected $table = 'jenis_memberships';
     protected $primaryKey = 'id_jenis_membership';
+
     protected $fillable = [
         'nama_jenis_membership',
         'harga_membership',
         'jadwal',
         'durasi',
-        'deskripsi'
+        'deskripsi',
     ];
 
     public function memberships()

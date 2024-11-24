@@ -7,63 +7,152 @@ use Illuminate\Http\Request;
 
 class CoachController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
-        $query = Coach::query();
+        try {
+            $query = Coach::query();
 
-        if ($request->has('search')) {
-            $search = $request->input('search');
-            $query->where('nama_coach', 'like', "%$search%");
+            // Pencarian berdasarkan nama_coach
+            if ($request->has('search')) {
+                $search = $request->input('search');
+                $query->where('nama_coach', 'like', "%$search%");
+            }
+
+            $coaches = $query->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Get successful',
+                'data' => $coaches
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $coaches = $query->get();
-
-        return view('coach.index', compact('coaches'));
     }
 
-    public function create()
-    {
-        return view('coach.create');
-    }
-
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_coach' => 'required|string|max:255',
-        ]);
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'nama_coach' => 'required|string|max:255',
+            ]);
 
-        Coach::create([
-            'nama_coach' => $request->nama_coach,
-        ]);
+            // Menyimpan coach
+            $coach = Coach::create($validated);
 
-        return redirect()->route('coach.index')->with('success', 'Coach berhasil ditambahkan');
+            return response()->json([
+                'status' => true,
+                'message' => 'Create successful',
+                'data' => $coach
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    public function edit($id)
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
     {
-        $coach = Coach::findOrFail($id);
+        try {
+            $coach = Coach::findOrFail($id);
 
-        return view('coach.edit', compact('coach'));
+            return response()->json([
+                'status' => true,
+                'message' => 'Get successful',
+                'data' => $coach
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Coach not found',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'nama_coach' => 'required|string|max:255',
-        ]);
+        try {
+            $coach = Coach::findOrFail($id);
 
-        $coach = Coach::findOrFail($id);
-        $coach->update([
-            'nama_coach' => $request->nama_coach,
-        ]);
+            // Validasi input
+            $validated = $request->validate([
+                'nama_coach' => 'required|string|max:255',
+            ]);
 
-        return redirect()->route('coach.index')->with('success', 'Coach berhasil diperbarui');
+            // Update coach
+            $coach->update($validated);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Update successful',
+                'data' => $coach
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
-        Coach::destroy($id);
+        try {
+            $coach = Coach::findOrFail($id);
+            $coach->delete();
 
-        return redirect()->route('coach.index')->with('success', 'Coach berhasil dihapus');
+            return response()->json([
+                'status' => true,
+                'message' => 'Delete successful'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Coach not found',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 }

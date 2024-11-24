@@ -7,71 +7,147 @@ use Illuminate\Http\Request;
 
 class RuanganController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
-        $query = Ruangan::query();
+        try {
+            $query = Ruangan::query();
 
-        if ($request->has('search')) {
-            $query->where('kapasitas', 'like', '%' . $request->search . '%');
+            // Pencarian berdasarkan kapasitas
+            if ($request->has('search')) {
+                $search = $request->input('search');
+                $query->where('kapasitas', 'like', "%$search%");
+            }
+
+            $ruangans = $query->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Get successful',
+                'data' => $ruangans
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $ruangans = $query->get();
-
-        return response()->json($ruangans);
     }
+
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'kapasitas' => 'required|integer',
-        ]);
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'kapasitas' => 'required|integer',
+            ]);
 
-        $ruangan = Ruangan::create([
-            'kapasitas' => $request->kapasitas,
-        ]);
+            // Menyimpan ruangan
+            $ruangan = Ruangan::create($validated);
 
-        return response()->json($ruangan, 201);
+            return response()->json([
+                'status' => true,
+                'message' => 'Create successful',
+                'data' => $ruangan
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function show($id)
     {
-        $ruangan = Ruangan::find($id);
+        try {
+            $ruangan = Ruangan::findOrFail($id);
 
-        if (!$ruangan) {
-            return response()->json(['message' => 'Ruangan tidak ditemukan'], 404);
+            return response()->json([
+                'status' => true,
+                'message' => 'Get successful',
+                'data' => $ruangan
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ruangan not found',
+                'error' => $e->getMessage()
+            ], 404);
         }
-
-        return response()->json($ruangan);
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'kapasitas' => 'required|integer',
-        ]);
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'kapasitas' => 'required|integer',
+            ]);
 
-        $ruangan = Ruangan::find($id);
+            $ruangan = Ruangan::findOrFail($id);
 
-        if (!$ruangan) {
-            return response()->json(['message' => 'Ruangan tidak ditemukan'], 404);
+            // Update ruangan
+            $ruangan->update($validated);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Update successful',
+                'data' => $ruangan
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ruangan not found',
+                'error' => $e->getMessage()
+            ], 404);
         }
-
-        $ruangan->update([
-            'kapasitas' => $request->kapasitas,
-        ]);
-
-        return response()->json($ruangan);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
-        $ruangan = Ruangan::find($id);
+        try {
+            $ruangan = Ruangan::findOrFail($id);
+            $ruangan->delete();
 
-        if (!$ruangan) {
-            return response()->json(['message' => 'Ruangan tidak ditemukan'], 404);
+            return response()->json([
+                'status' => true,
+                'message' => 'Delete successful'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ruangan not found',
+                'error' => $e->getMessage()
+            ], 404);
         }
-
-        $ruangan->delete();
-
-        return response()->json(['message' => 'Ruangan berhasil dihapus']);
     }
 }

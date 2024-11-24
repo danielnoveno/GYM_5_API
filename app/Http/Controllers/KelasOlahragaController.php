@@ -8,72 +8,158 @@ use Illuminate\Http\Request;
 
 class KelasOlahragaController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
-        $query = KelasOlahraga::query();
+        try {
+            $query = KelasOlahraga::query();
 
-        if ($request->has('search')) {
-            $search = $request->input('search');
-            $query->where('nama_olahraga', 'like', "%$search%")
-                ->orWhere('deskripsi', 'like', "%$search%");
+            // Pencarian berdasarkan nama_olahraga dan deskripsi (optional)
+            if ($request->has('search')) {
+                $search = $request->input('search');
+                $query->where('nama_olahraga', 'like', "%$search%")
+                    ->orWhere('deskripsi', 'like', "%$search%");
+            }
+
+            $kelasOlahraga = $query->with(['coach', 'ruangan', 'jadwal'])->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Get successful',
+                'data' => $kelasOlahraga
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $kelasOlahraga = $query->with(['coach', 'ruangan', 'jadwal'])->get();
-
-        return view('kelas_olahraga.index', compact('kelasOlahraga'));
     }
 
-    public function create()
-    {
-        $coaches = Coach::all();
-        return view('kelas_olahraga.create', compact('coaches'));
-    }
-
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_olahraga' => 'required|string|max:255',
-            'kapasitas' => 'required|integer',
-            'id_jadwal' => 'required|exists:jadwals,id_jadwal',
-            'id_ruangan' => 'required|exists:ruangans,id_ruangan',
-            'id_coach' => 'required|exists:coaches,id_coach',
-            'deskripsi' => 'nullable|string',
-        ]);
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'nama_olahraga' => 'required|string|max:255',
+                'kapasitas' => 'required|integer',
+                'id_jadwal' => 'required|exists:jadwals,id_jadwal',
+                'id_ruangan' => 'required|exists:ruangans,id_ruangan',
+                'id_coach' => 'required|exists:coaches,id_coach',
+                'deskripsi' => 'nullable|string',
+            ]);
 
-        KelasOlahraga::create($request->all());
+            // Menyimpan kelas olahraga
+            $kelasOlahraga = KelasOlahraga::create($validated);
 
-        return redirect()->route('kelas_olahraga.index')->with('success', 'Kelas olahraga berhasil dibuat');
+            return response()->json([
+                'status' => true,
+                'message' => 'Create successful',
+                'data' => $kelasOlahraga
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    public function edit($id)
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
     {
-        $kelasOlahraga = KelasOlahraga::findOrFail($id);
-        $coaches = Coach::all();
+        try {
+            $kelasOlahraga = KelasOlahraga::findOrFail($id);
 
-        return view('kelas_olahraga.edit', compact('kelasOlahraga', 'coaches'));
+            return response()->json([
+                'status' => true,
+                'message' => 'Get successful',
+                'data' => $kelasOlahraga
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Kelas olahraga not found',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'nama_olahraga' => 'required|string|max:255',
-            'kapasitas' => 'required|integer',
-            'id_jadwal' => 'required|exists:jadwals,id_jadwal',
-            'id_ruangan' => 'required|exists:ruangans,id_ruangan',
-            'id_coach' => 'required|exists:coaches,id_coach',
-            'deskripsi' => 'nullable|string',
-        ]);
+        try {
+            $kelasOlahraga = KelasOlahraga::findOrFail($id);
 
-        $kelasOlahraga = KelasOlahraga::findOrFail($id);
-        $kelasOlahraga->update($request->all());
+            // Validasi input
+            $validated = $request->validate([
+                'nama_olahraga' => 'required|string|max:255',
+                'kapasitas' => 'required|integer',
+                'id_jadwal' => 'required|exists:jadwals,id_jadwal',
+                'id_ruangan' => 'required|exists:ruangans,id_ruangan',
+                'id_coach' => 'required|exists:coaches,id_coach',
+                'deskripsi' => 'nullable|string',
+            ]);
 
-        return redirect()->route('kelas_olahraga.index')->with('success', 'Kelas olahraga berhasil diperbarui');
+            // Update kelas olahraga
+            $kelasOlahraga->update($validated);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Update successful',
+                'data' => $kelasOlahraga
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
-        KelasOlahraga::destroy($id);
+        try {
+            $kelasOlahraga = KelasOlahraga::findOrFail($id);
+            $kelasOlahraga->delete();
 
-        return redirect()->route('kelas_olahraga.index')->with('success', 'Kelas olahraga berhasil dihapus');
+            return response()->json([
+                'status' => true,
+                'message' => 'Delete successful'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Kelas olahraga not found',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 }

@@ -7,49 +7,146 @@ use Illuminate\Http\Request;
 
 class LayananController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
-        $layanan = Layanan::all();
-        return response()->json($layanan);
-    }
+        try {
+            $query = Layanan::query();
 
-    public function show($id)
-    {
-        $layanan = Layanan::find($id);
-        if ($layanan) {
-            return response()->json($layanan);
+            // Pencarian berdasarkan nama_layanan (optional)
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where('nama_layanan', 'like', "%{$search}%");
+            }
+
+            $data = $query->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Get successful',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return response()->json(['message' => 'Layanan not found'], 404);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_layanan' => 'required|string'
-        ]);
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'nama_layanan' => 'required|string'
+            ]);
 
-        $layanan = Layanan::create($request->all());
+            // Menyimpan data layanan
+            $layanan = Layanan::create($validated);
 
-        return response()->json($layanan, 201);
+            return response()->json([
+                'status' => true,
+                'message' => 'Create successful',
+                'data' => $layanan
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        try {
+            $layanan = Layanan::findOrFail($id);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Get successful',
+                'data' => $layanan
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Layanan not found',
+                'error' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, $id)
     {
-        $layanan = Layanan::find($id);
-        if ($layanan) {
-            $layanan->update($request->all());
-            return response()->json($layanan);
+        try {
+            $layanan = Layanan::findOrFail($id);
+
+            // Validasi input
+            $validated = $request->validate([
+                'nama_layanan' => 'sometimes|required|string'
+            ]);
+
+            $layanan->update($validated);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Update successful',
+                'data' => $layanan
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return response()->json(['message' => 'Layanan not found'], 404);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
-        $layanan = Layanan::find($id);
-        if ($layanan) {
+        try {
+            $layanan = Layanan::findOrFail($id);
             $layanan->delete();
-            return response()->json(['message' => 'Layanan deleted']);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Delete successful'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Layanan not found',
+                'error' => $e->getMessage()
+            ], 404);
         }
-        return response()->json(['message' => 'Layanan not found'], 404);
     }
 }
