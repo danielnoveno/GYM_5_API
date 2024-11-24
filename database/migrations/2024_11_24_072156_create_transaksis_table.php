@@ -14,12 +14,11 @@ return new class extends Migration
             $table->decimal('jumlah_transaksi', 10, 2);
             $table->string('metode_pembayaran');
             $table->string('status_pembayaran');
-            $table->unsignedBigInteger('id_layanan');
-            $table->unsignedBigInteger('id_pelanggan');
+            $table->unsignedBigInteger('id_layanan'); // Pastikan ini juga
+            $table->foreign('id_layanan')->references('id_layanan')->on('layanans')->onDelete('cascade');
+            $table->unsignedBigInteger('id_pelanggan'); // Pastikan ini unsignedBigInteger
+            $table->foreign('id_pelanggan')->references('id_pelanggan')->on('pelanggans')->onDelete('cascade');
             $table->timestamps();
-
-            $table->foreignId('id_layanan')->constrained()->onDelete('cascade');
-            $table->foreignId('id_pelanggan')->constrained()->onDelete('cascade');
         });
     }
 
