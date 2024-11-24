@@ -18,7 +18,6 @@ class Ruangan extends Model
         'kapasitas',
     ];
 
-    // Relasi dengan KelasOlahraga (1-1)
     public function kelasOlahraga()
     {
         return $this->hasOne(KelasOlahraga::class, 'id_ruangan');

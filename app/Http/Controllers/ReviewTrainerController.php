@@ -7,12 +7,10 @@ use Illuminate\Http\Request;
 
 class ReviewTrainerController extends Controller
 {
-    // Menampilkan semua review atau mencari berdasarkan parameter
     public function index(Request $request)
     {
         $query = ReviewTrainer::query();
 
-        // Fitur pencarian
         if ($request->has('search')) {
             $search = $request->search;
             $query->where('review', 'like', "%{$search}%");
@@ -22,14 +20,8 @@ class ReviewTrainerController extends Controller
 
         return response()->json($reviews);
     }
+    public function create() {}
 
-    // Menampilkan form untuk membuat review
-    public function create()
-    {
-        // return view('review.create');
-    }
-
-    // Menyimpan review
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -44,7 +36,6 @@ class ReviewTrainerController extends Controller
         return response()->json($review, 201);
     }
 
-    // Menampilkan review berdasarkan ID
     public function show($id)
     {
         $review = ReviewTrainer::with(['trainer', 'pelanggan'])->findOrFail($id);
@@ -52,16 +43,22 @@ class ReviewTrainerController extends Controller
         return response()->json($review);
     }
 
-    // Mengupdate review
     public function update(Request $request, $id)
     {
         $review = ReviewTrainer::findOrFail($id);
-        $review->update($request->all());
+
+        $validated = $request->validate([
+            'id_trainer' => 'sometimes|required|exists:trainers,id_trainer',
+            'id_pelanggan' => 'sometimes|required|exists:pelanggans,id_pelanggan',
+            'tanggal_review' => 'sometimes|required|date',
+            'review' => 'sometimes|required|string',
+        ]);
+
+        $review->update($validated);
 
         return response()->json($review);
     }
 
-    // Menghapus review
     public function destroy($id)
     {
         $review = ReviewTrainer::findOrFail($id);

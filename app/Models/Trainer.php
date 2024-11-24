@@ -21,7 +21,6 @@ class Trainer extends Model
         'id_paket_personal_trainer'
     ];
 
-    // Relasi ke PersonalTrainer
     public function personalTrainer()
     {
         return $this->belongsTo(PersonalTrainer::class, 'id_paket_personal_trainer');

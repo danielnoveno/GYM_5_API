@@ -7,12 +7,10 @@ use Illuminate\Http\Request;
 
 class TransaksiController extends Controller
 {
-    // Menampilkan daftar Transaksi
     public function index(Request $request)
     {
         $query = Transaksi::query();
 
-        // Fitur pencarian berdasarkan metode pembayaran atau status
         if ($request->has('search')) {
             $query->where('metode_pembayaran', 'like', '%' . $request->search . '%')
                 ->orWhere('status_pembayaran', 'like', '%' . $request->search . '%');
@@ -23,7 +21,6 @@ class TransaksiController extends Controller
         return response()->json($transaksis);
     }
 
-    // Menambah Transaksi baru
     public function store(Request $request)
     {
         $request->validate([
@@ -46,8 +43,6 @@ class TransaksiController extends Controller
 
         return response()->json($transaksi, 201);
     }
-
-    // Menampilkan Transaksi berdasarkan ID
     public function show($id)
     {
         $transaksi = Transaksi::find($id);
@@ -59,7 +54,6 @@ class TransaksiController extends Controller
         return response()->json($transaksi);
     }
 
-    // Mengupdate data Transaksi
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -85,7 +79,6 @@ class TransaksiController extends Controller
         return response()->json($transaksi);
     }
 
-    // Menghapus Transaksi
     public function destroy($id)
     {
         $transaksi = Transaksi::find($id);

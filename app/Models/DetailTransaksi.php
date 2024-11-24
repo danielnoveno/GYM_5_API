@@ -18,13 +18,11 @@ class DetailTransaksi extends Model
         'id_layanan',
     ];
 
-    // Relasi ke Transaksi
     public function transaksi()
     {
         return $this->belongsTo(Transaksi::class, 'id_transaksi');
     }
 
-    // Relasi ke Layanan
     public function layanan()
     {
         return $this->belongsTo(Layanan::class, 'id_layanan');

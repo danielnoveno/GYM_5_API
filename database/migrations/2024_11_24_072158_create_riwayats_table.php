@@ -9,20 +9,27 @@ return new class extends Migration
     public function up()
     {
         Schema::create('riwayats', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->id('id_riwayat');
             $table->date('tanggal_riwayat');
             $table->string('jenis_layanan');
-            $table->unsignedBigInteger('id_detail_transaksi');
-            $table->unsignedBigInteger('id_layanan');
             $table->timestamps();
 
-            $table->foreignId('id_detail_transaksi')->constrained('detail_transaksis', 'id_detail_transaksi')->onDelete('cascade'); // Sesuaikan kolom yang direferensikan
-            $table->foreignId('id_layanan')->constrained('layanans')->onDelete('cascade');
-        });
-    }
+            // Kolom foreign key harus memiliki tipe yang sama
+            $table->unsignedBigInteger('id_detail_transaksi');
+            $table->unsignedBigInteger('id_layanan');
 
-    public function down()
-    {
-        Schema::dropIfExists('riwayats');
+            // Definisikan foreign key constraints
+            $table->foreign('id_detail_transaksi')
+                ->references('id_detail_transaksi')
+                ->on('detail_transaksis')
+                ->onDelete('cascade');
+
+            $table->foreign('id_layanan')
+                ->references('id_layanan')
+                ->on('layanans')
+                ->onDelete('cascade');
+        });
     }
 };
