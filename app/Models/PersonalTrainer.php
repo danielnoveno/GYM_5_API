@@ -19,7 +19,6 @@ class PersonalTrainer extends Model
         'deskripsi'
     ];
 
-    // Relasi ke Trainer
     public function trainers()
     {
         return $this->hasMany(Trainer::class, 'id_paket_personal_trainer');

@@ -19,7 +19,6 @@ class ReviewTrainer extends Model
         'review',
     ];
 
-    // Relasi dengan Trainer dan Pelanggan
     public function trainer()
     {
         return $this->belongsTo(Trainer::class, 'id_trainer');

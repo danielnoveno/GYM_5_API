@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class DetailTransaksiController extends Controller
 {
-    // Fungsi untuk menampilkan semua data
     public function index(Request $request)
     {
         $query = DetailTransaksi::query();
@@ -23,7 +22,6 @@ class DetailTransaksiController extends Controller
         return response()->json($detailTransaksi);
     }
 
-    // Fungsi untuk menampilkan satu data
     public function show($id)
     {
         $detailTransaksi = DetailTransaksi::with(['transaksi', 'layanan'])->findOrFail($id);
@@ -31,7 +29,6 @@ class DetailTransaksiController extends Controller
         return response()->json($detailTransaksi);
     }
 
-    // Fungsi untuk menyimpan data baru
     public function store(Request $request)
     {
         $request->validate([
@@ -44,7 +41,6 @@ class DetailTransaksiController extends Controller
         return response()->json($detailTransaksi, 201);
     }
 
-    // Fungsi untuk memperbarui data
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -58,7 +54,6 @@ class DetailTransaksiController extends Controller
         return response()->json($detailTransaksi);
     }
 
-    // Fungsi untuk menghapus data
     public function destroy($id)
     {
         $detailTransaksi = DetailTransaksi::findOrFail($id);

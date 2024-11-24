@@ -7,12 +7,10 @@ use Illuminate\Http\Request;
 
 class AlatGymController extends Controller
 {
-    // Menampilkan semua alat atau mencari berdasarkan nama
     public function index(Request $request)
     {
         $query = AlatGym::query();
 
-        // Fitur pencarian berdasarkan nama alat
         if ($request->has('search')) {
             $search = $request->search;
             $query->where('nama_alat', 'like', "%{$search}%");
@@ -23,7 +21,6 @@ class AlatGymController extends Controller
         return response()->json($alatGyms);
     }
 
-    // Menyimpan alat gym baru
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -38,7 +35,6 @@ class AlatGymController extends Controller
         return response()->json($alatGym, 201);
     }
 
-    // Menampilkan alat gym berdasarkan ID
     public function show($id)
     {
         $alatGym = AlatGym::findOrFail($id);
@@ -46,7 +42,6 @@ class AlatGymController extends Controller
         return response()->json($alatGym);
     }
 
-    // Mengupdate data alat gym
     public function update(Request $request, $id)
     {
         $alatGym = AlatGym::findOrFail($id);
@@ -55,7 +50,6 @@ class AlatGymController extends Controller
         return response()->json($alatGym);
     }
 
-    // Menghapus alat gym
     public function destroy($id)
     {
         $alatGym = AlatGym::findOrFail($id);

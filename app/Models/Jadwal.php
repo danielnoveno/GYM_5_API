@@ -20,19 +20,15 @@ class Jadwal extends Model
         'id_trainer',
     ];
 
-    // Relasi dengan Ruangan (1-1)
     public function ruangan()
     {
         return $this->belongsTo(Ruangan::class, 'id_ruangan');
     }
 
-    // Relasi dengan Trainer (1-N)
     public function trainer()
     {
         return $this->belongsTo(Trainer::class, 'id_trainer');
     }
-
-    // Relasi dengan KelasOlahraga (N-N)
     public function kelasOlahraga()
     {
         return $this->belongsToMany(KelasOlahraga::class, 'jadwal_kelas', 'id_jadwal', 'id_kelas');

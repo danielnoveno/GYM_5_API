@@ -7,12 +7,10 @@ use Illuminate\Http\Request;
 
 class RuanganController extends Controller
 {
-    // Menampilkan daftar Ruangan
     public function index(Request $request)
     {
         $query = Ruangan::query();
 
-        // Fitur pencarian
         if ($request->has('search')) {
             $query->where('kapasitas', 'like', '%' . $request->search . '%');
         }
@@ -21,8 +19,6 @@ class RuanganController extends Controller
 
         return response()->json($ruangans);
     }
-
-    // Menambah Ruangan baru
     public function store(Request $request)
     {
         $request->validate([
@@ -36,7 +32,6 @@ class RuanganController extends Controller
         return response()->json($ruangan, 201);
     }
 
-    // Menampilkan Ruangan berdasarkan ID
     public function show($id)
     {
         $ruangan = Ruangan::find($id);
@@ -48,7 +43,6 @@ class RuanganController extends Controller
         return response()->json($ruangan);
     }
 
-    // Mengupdate data Ruangan
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -68,7 +62,6 @@ class RuanganController extends Controller
         return response()->json($ruangan);
     }
 
-    // Menghapus Ruangan
     public function destroy($id)
     {
         $ruangan = Ruangan::find($id);

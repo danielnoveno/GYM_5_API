@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class RiwayatController extends Controller
 {
-    // Fungsi untuk menampilkan semua data
     public function index(Request $request)
     {
         $query = Riwayat::query();
@@ -23,7 +22,6 @@ class RiwayatController extends Controller
         return response()->json($riwayat);
     }
 
-    // Fungsi untuk menampilkan satu data
     public function show($id)
     {
         $riwayat = Riwayat::with(['detailTransaksi', 'layanan'])->findOrFail($id);
@@ -31,7 +29,6 @@ class RiwayatController extends Controller
         return response()->json($riwayat);
     }
 
-    // Fungsi untuk menyimpan data baru
     public function store(Request $request)
     {
         $request->validate([
@@ -46,7 +43,6 @@ class RiwayatController extends Controller
         return response()->json($riwayat, 201);
     }
 
-    // Fungsi untuk memperbarui data
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -61,8 +57,6 @@ class RiwayatController extends Controller
 
         return response()->json($riwayat);
     }
-
-    // Fungsi untuk menghapus data
     public function destroy($id)
     {
         $riwayat = Riwayat::findOrFail($id);

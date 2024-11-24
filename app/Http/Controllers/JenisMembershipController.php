@@ -11,7 +11,6 @@ class JenisMembershipController extends Controller
 {
     public function index(Request $request)
     {
-        // Pencarian berdasarkan nama jenis membership
         $query = JenisMembership::query();
 
         if ($request->has('search')) {
