@@ -20,7 +20,6 @@ class Pelanggan extends Model
         'no_telepon',
         'email',
         'tanggal_daftar',
-        'id_jadwal'
     ];
 
     public function membership()

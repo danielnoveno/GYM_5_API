@@ -15,11 +15,8 @@ return new class extends Migration
             $table->string('alamat');
             $table->string('no_telepon');
             $table->string('email');
-            $table->unsignedBigInteger('id_jadwal');
             $table->timestamp('tanggal_daftar')->useCurrent();
             $table->timestamps();
-
-            $table->foreign('id_jadwal')->references('id_jadwal')->on('jadwals')->onDelete('cascade');
         });
     }
 
