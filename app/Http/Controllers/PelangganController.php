@@ -4,59 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class PelangganController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Register a new pelanggan.
      */
-    public function index()
-    {
-        try {
-            $pelanggans = Pelanggan::all();
-            return response()->json([
-                'status' => true,
-                'message' => 'Pelanggan fetched successfully',
-                'data' => $pelanggans
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    {
-        try {
-            $pelanggan = Pelanggan::find($id);
-            if ($pelanggan) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Pelanggan found',
-                    'data' => $pelanggan
-                ], 200);
-            }
-            return response()->json([
-                'status' => false,
-                'message' => 'Pelanggan not found'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    // In the store method:
-    public function store(Request $request)
+    public function register(Request $request)
     {
         try {
             $validated = $request->validate([
@@ -64,105 +20,76 @@ class PelangganController extends Controller
                 'umur' => 'required|integer',
                 'alamat' => 'required|string|max:255',
                 'no_telepon' => 'required|string|max:15',
-                'email' => 'required|email|max:255',
+                'email' => 'required|email|unique:pelanggans,email',
                 'password' => 'required|string|min:8',
             ]);
 
-            // Hash the password before saving
+            // Hash the password
             $validated['password'] = bcrypt($validated['password']);
 
             $pelanggan = Pelanggan::create($validated);
 
             return response()->json([
                 'status' => true,
-                'message' => 'Pelanggan created successfully',
-                'data' => $pelanggan
+                'message' => 'Registration successful',
+                'data' => $pelanggan,
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Error storing data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function update(Request $request, $id)
-    {
-        try {
-            $pelanggan = Pelanggan::find($id);
-            if ($pelanggan) {
-                $validated = $request->validate([
-                    'nama' => 'required|string|max:255',
-                    'umur' => 'required|integer',
-                    'alamat' => 'required|string|max:255',
-                    'no_telepon' => 'required|string|max:15',
-                    'email' => 'required|email|max:255',
-                    'password' => 'nullable|string|min:8',
-                ]);
-
-                // If password is provided, hash it
-                if (isset($validated['password'])) {
-                    $validated['password'] = bcrypt($validated['password']);
-                }
-
-                $pelanggan->update($validated);
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Pelanggan updated successfully',
-                    'data' => $pelanggan
-                ], 200);
-            }
-            return response()->json([
-                'status' => false,
-                'message' => 'Pelanggan not found'
-            ], 404);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error updating data',
-                'error' => $e->getMessage()
+                'message' => 'Error during registration',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Login pelanggan.
      */
-    public function destroy($id)
+    public function login(Request $request)
     {
         try {
-            $pelanggan = Pelanggan::find($id);
-            if ($pelanggan) {
-                $pelanggan->delete();
+            $validated = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|string',
+            ]);
+
+            $pelanggan = Pelanggan::where('email', $validated['email'])->first();
+
+            if ($pelanggan && Hash::check($validated['password'], $pelanggan->password)) {
+                $token = $pelanggan->createToken('auth_token')->plainTextToken;
 
                 return response()->json([
                     'status' => true,
-                    'message' => 'Pelanggan deleted successfully'
+                    'message' => 'Login successful',
+                    'data' => [
+                        'pelanggan' => $pelanggan,
+                        'token' => $token,
+                    ],
                 ], 200);
             }
+
             return response()->json([
                 'status' => false,
-                'message' => 'Pelanggan not found'
-            ], 404);
+                'message' => 'Invalid email or password',
+            ], 401);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Error deleting data',
-                'error' => $e->getMessage()
+                'message' => 'Error during login',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

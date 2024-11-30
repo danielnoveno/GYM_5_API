@@ -17,11 +17,16 @@ use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\TransaksiController;
 use App\Models\Riwayat;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::post('/register', [PelangganController::class, 'register']);
+Route::post('/login', [PelangganController::class, 'login']);
+Route::post('/logout', [PelangganController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::resource('alat_gym', AlatGymController::class);
 Route::resource('coach', CoachController::class);
