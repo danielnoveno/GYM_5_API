@@ -67,7 +67,6 @@ class PelangganController extends Controller
                 'alamat' => 'required|string|max:255',
                 'no_telepon' => 'required|string|max:15',
                 'email' => 'required|email|max:255',
-                'id_jadwal' => 'required|integer|exists:jadwals,id_jadwal', // Assuming 'jadwals' table exists
             ]);
 
             $pelanggan = Pelanggan::create($validated);
@@ -106,7 +105,6 @@ class PelangganController extends Controller
                     'alamat' => 'required|string|max:255',
                     'no_telepon' => 'required|string|max:15',
                     'email' => 'required|email|max:255',
-                    'id_jadwal' => 'required|integer|exists:jadwals,id_jadwal', // Assuming 'jadwals' table exists
                 ]);
 
                 $pelanggan->update($validated);
