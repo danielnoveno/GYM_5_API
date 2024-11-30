@@ -19,8 +19,10 @@ class Pelanggan extends Model
         'alamat',
         'no_telepon',
         'email',
+        'password',
         'tanggal_daftar',
     ];
+
 
     public function membership()
     {

@@ -55,9 +55,7 @@ class PelangganController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // In the store method:
     public function store(Request $request)
     {
         try {
@@ -67,7 +65,11 @@ class PelangganController extends Controller
                 'alamat' => 'required|string|max:255',
                 'no_telepon' => 'required|string|max:15',
                 'email' => 'required|email|max:255',
+                'password' => 'required|string|min:8',
             ]);
+
+            // Hash the password before saving
+            $validated['password'] = bcrypt($validated['password']);
 
             $pelanggan = Pelanggan::create($validated);
 
@@ -91,9 +93,6 @@ class PelangganController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -105,7 +104,13 @@ class PelangganController extends Controller
                     'alamat' => 'required|string|max:255',
                     'no_telepon' => 'required|string|max:15',
                     'email' => 'required|email|max:255',
+                    'password' => 'nullable|string|min:8',
                 ]);
+
+                // If password is provided, hash it
+                if (isset($validated['password'])) {
+                    $validated['password'] = bcrypt($validated['password']);
+                }
 
                 $pelanggan->update($validated);
 
