@@ -4,57 +4,93 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class PelangganController extends Controller
 {
-    public function index()
+    /**
+     * Register a new pelanggan.
+     */
+    public function register(Request $request)
     {
-        $pelanggans = Pelanggan::all();
-        return response()->json($pelanggans);
-    }
+        try {
+            $validated = $request->validate([
+                'nama' => 'required|string|max:255',
+                'umur' => 'required|integer',
+                'alamat' => 'required|string|max:255',
+                'no_telepon' => 'required|string|max:15',
+                'email' => 'required|email|unique:pelanggans,email',
+                'password' => 'required|string|min:8',
+            ]);
 
-    public function show($id)
-    {
-        $pelanggans = Pelanggan::find($id);
-        if ($pelanggans) {
-            return response()->json($pelanggans);
+            // Hash the password
+            $validated['password'] = bcrypt($validated['password']);
+
+            $pelanggan = Pelanggan::create($validated);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Registration successful',
+                'data' => $pelanggan,
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error during registration',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-        return response()->json(['message' => 'Pelanggan not found'], 404);
     }
 
-    public function store(Request $request)
+    /**
+     * Login pelanggan.
+     */
+    public function login(Request $request)
     {
-        $request->validate([
-            'nama' => 'required|string',
-            'umur' => 'required|integer',
-            'alamat' => 'required|string',
-            'no_telepon' => 'required|string',
-            'email' => 'required|email',
-            'id_jadwal' => 'required|integer'
-        ]);
+        try {
+            $validated = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|string',
+            ]);
 
-        $pelanggans = Pelanggan::create($request->all());
+            $pelanggan = Pelanggan::where('email', $validated['email'])->first();
 
-        return response()->json($pelanggans, 201);
-    }
+            if ($pelanggan && Hash::check($validated['password'], $pelanggan->password)) {
+                $token = $pelanggan->createToken('auth_token')->plainTextToken;
 
-    public function update(Request $request, $id)
-    {
-        $pelanggans = Pelanggan::find($id);
-        if ($pelanggans) {
-            $pelanggans->update($request->all());
-            return response()->json($pelanggans);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Login successful',
+                    'data' => [
+                        'pelanggan' => $pelanggan,
+                        'token' => $token,
+                    ],
+                ], 200);
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid email or password',
+            ], 401);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error during login',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-        return response()->json(['message' => 'Pelanggan not found'], 404);
-    }
-
-    public function destroy($id)
-    {
-        $pelanggans = Pelanggan::find($id);
-        if ($pelanggans) {
-            $pelanggans->delete();
-            return response()->json(['message' => 'Pelanggan deleted']);
-        }
-        return response()->json(['message' => 'Pelanggan not found'], 404);
     }
 }
