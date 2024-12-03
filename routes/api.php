@@ -43,3 +43,5 @@ Route::resource('riwayat', RiwayatController::class);
 Route::resource('ruangan', RuanganController::class);
 Route::resource('trainer', TrainerController::class);
 Route::resource('transaksi', TransaksiController::class);
+
+Route::get('/getImageUrl/{imageName}', [MembershipController::class, 'getImageUrl']);
