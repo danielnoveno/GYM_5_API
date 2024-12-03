@@ -3,160 +3,115 @@
 namespace App\Http\Controllers;
 
 use App\Models\Membership;
-use App\Models\JenisMembership;
 use Illuminate\Http\Request;
 
 class MembershipController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar semua memberships.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index()
     {
-        try {
-            $query = Membership::query();
-
-            if ($request->has('search')) {
-                $query->whereHas('jenisMembership', function ($q) use ($request) {
-                    $q->where('nama_jenis_membership', 'like', '%' . $request->search . '%');
-                });
-            }
-
-            $memberships = $query->with(['pelanggan', 'jenisMembership'])->get();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Memberships fetched successfully',
-                'data' => $memberships
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $memberships = Membership::all();
+        return response()->json($memberships);
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        try {
-            // Validasi input
-            $validated = $request->validate([
-                'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
-                'id_jenis_membership' => 'required|exists:jenis_memberships,id_jenis_membership',
-                'jenis_membership' => 'required|string|max:255',
-                'tanggal_mulai' => 'required|date',
-                'tanggal_berakhir' => 'required|date',
-                'status' => 'required|string|max:255',
-            ]);
-
-            // Membuat data membership baru
-            $membership = Membership::create($validated);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Membership created successfully',
-                'data' => $membership
-            ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error storing data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Display the specified resource.
+     * Menampilkan detail membership berdasarkan ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
-        try {
-            $membership = Membership::with(['pelanggan', 'jenisMembership'])->findOrFail($id);
+        $membership = Membership::find($id);
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Membership fetched successfully',
-                'data' => $membership
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Membership not found',
-                'error' => $e->getMessage()
-            ], 404);
+        if (!$membership) {
+            return response()->json(['message' => 'Membership not found'], 404);
         }
+
+        return response()->json($membership);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Membuat membership baru.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'image' => 'nullable|string|max:255',
+            'duration' => 'required|string|max:255',  // duration sebagai string
+        ]);
+
+        // Membuat data membership baru
+        $membership = Membership::create([
+            'title' => $request->title,
+            'image' => $request->image,
+            'duration' => $request->duration, // Menyimpan duration dalam string
+        ]);
+
+        // Mengembalikan response berupa data membership yang baru
+        return response()->json($membership, 201);
+    }
+
+    /**
+     * Mengupdate data membership yang sudah ada.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
-        try {
-            // Validasi input
-            $validated = $request->validate([
-                'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
-                'id_jenis_membership' => 'required|exists:jenis_memberships,id_jenis_membership',
-                'jenis_membership' => 'required|string|max:255',
-                'tanggal_mulai' => 'required|date',
-                'tanggal_berakhir' => 'required|date',
-                'status' => 'required|string|max:255',
-            ]);
+        $membership = Membership::find($id);
 
-            $membership = Membership::findOrFail($id);
-            $membership->update($validated);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Membership updated successfully',
-                'data' => $membership
-            ], 200);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Membership not found',
-                'error' => $e->getMessage()
-            ], 404);
+        if (!$membership) {
+            return response()->json(['message' => 'Membership not found'], 404);
         }
+
+        // Validasi input
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'image' => 'nullable|string|max:255',
+            'duration' => 'required|string|max:255',  // duration sebagai string
+        ]);
+
+        // Mengupdate data membership
+        $membership->update([
+            'title' => $request->title,
+            'image' => $request->image,
+            'duration' => $request->duration,  // Mengupdate duration sebagai string
+        ]);
+
+        // Mengembalikan response berupa data membership yang sudah diupdate
+        return response()->json($membership);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus membership berdasarkan ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
-        try {
-            $membership = Membership::findOrFail($id);
-            $membership->delete();
+        $membership = Membership::find($id);
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Membership deleted successfully'
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Membership not found',
-                'error' => $e->getMessage()
-            ], 404);
+        if (!$membership) {
+            return response()->json(['message' => 'Membership not found'], 404);
         }
+
+        // Menghapus membership
+        $membership->delete();
+
+        // Mengembalikan response sukses
+        return response()->json(['message' => 'Membership deleted successfully']);
     }
 }

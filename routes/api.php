@@ -36,6 +36,9 @@ Route::resource('jenis_membership', JenisMembershipController::class);
 Route::resource('kelas_olahraga', KelasOlahragaController::class);
 Route::resource('layanan', LayananController::class);
 Route::resource('membership', MembershipController::class);
+// Route::post('membership', [MembershipController::class, 'store']);
+
+
 Route::resource('pelanggan', PelangganController::class);
 Route::resource('personal_trainer', PersonalTrainerController::class);
 Route::resource('review', ReviewTrainerController::class);
