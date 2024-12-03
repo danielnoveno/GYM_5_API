@@ -54,7 +54,7 @@ class PelangganController extends Controller
         return response()->json($pelanggan);
     }
 
-    /**
+   /**
      * Update the specified Pelanggan in storage.
      */
     public function update(Request $request, $id)
@@ -67,22 +67,17 @@ class PelangganController extends Controller
 
         $validatedData = $request->validate([
             'nama' => 'sometimes|string|max:255',
-            'umur' => 'sometimes|integer',
             'alamat' => 'sometimes|string|max:255',
             'no_telepon' => 'sometimes|string|max:15',
             'email' => 'sometimes|string|email|max:255|unique:pelanggans,email,' . $id . ',id_pelanggan',
-            'password' => 'sometimes|string|min:8',
-            'tanggal_daftar' => 'sometimes|date',
         ]);
 
-        if ($request->has('password')) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
-        }
-
+        // Update the profile with validated data
         $pelanggan->update($validatedData);
 
         return response()->json(['message' => 'Pelanggan updated successfully', 'data' => $pelanggan]);
     }
+
 
     /**
      * Remove the specified Pelanggan from storage.
