@@ -20,9 +20,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:sanctum');
 
 Route::post('/register', [PelangganController::class, 'register']);
 Route::post('/login', [PelangganController::class, 'login']);
@@ -45,3 +45,6 @@ Route::resource('trainer', TrainerController::class);
 Route::resource('transaksi', TransaksiController::class);
 
 Route::get('/getImageUrl/{imageName}', [MembershipController::class, 'getImageUrl']);
+
+
+Route::get('image', [MembershipController::class, "getImageUrl"]);

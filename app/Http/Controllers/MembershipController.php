@@ -124,13 +124,11 @@ class MembershipController extends Controller
      */
     public function getImageUrl($imageName)
     {
-        $imagePath = 'public/images/' . $imageName; // Path ke gambar di penyimpanan
-
+        $imagePath = 'storage/images/' . $imageName;
         if (Storage::exists($imagePath)) {
-            $url = Storage::url($imagePath); // Menghasilkan URL dengan Storage::url()
+            $url = asset(Storage::url($imagePath));
             return response()->json(['url' => $url]);
         }
-
         return response()->json(['message' => 'Image not found'], 404);
     }
 }
