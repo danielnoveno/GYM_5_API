@@ -44,23 +44,23 @@ class MembershipController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input
         $request->validate([
             'title' => 'required|string|max:255',
-            'image' => 'nullable|string|max:255',
-            'duration' => 'required|string|max:255',  // duration sebagai string
+            'image' => 'required|string|max:255',
+            'duration' => 'required|string|max:255',
         ]);
 
-        // Membuat data membership baru
+        $relativePath = str_replace('\\', '/', $request->image);
+
         $membership = Membership::create([
             'title' => $request->title,
-            'image' => $request->image,
-            'duration' => $request->duration, // Menyimpan duration dalam string
+            'image' => $relativePath,
+            'duration' => $request->duration,
         ]);
 
-        // Mengembalikan response berupa data membership yang baru
         return response()->json($membership, 201);
     }
+
 
     /**
      * Mengupdate data membership yang sudah ada.
@@ -124,9 +124,9 @@ class MembershipController extends Controller
      */
     public function getImageUrl($imageName)
     {
-        $imagePath = 'storage/images/' . $imageName;
-        if (Storage::exists($imagePath)) {
-            $url = asset(Storage::url($imagePath));
+        $imagePath = public_path($imageName);
+        if (file_exists($imagePath)) {
+            $url = asset($imageName);
             return response()->json(['url' => $url]);
         }
         return response()->json(['message' => 'Image not found'], 404);
