@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('memberships', function (Blueprint $table) {
             $table->id('id_membership');
             $table->string('title');
-            $table->string('image')->nullable();
+            $table->string('image');
             $table->string('duration');
             // $table->unsignedBigInteger('id_pelanggan');
             $table->timestamps();

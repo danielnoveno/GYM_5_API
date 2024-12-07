@@ -27,13 +27,20 @@ class MembershipController extends Controller
      */
     public function show($id)
     {
-        $membership = Membership::find($id);
+        $membership = Membership::with('jenisMemberships')->find($id);
 
         if (!$membership) {
             return response()->json(['message' => 'Membership not found'], 404);
         }
 
-        return response()->json($membership);
+        return response()->json([
+            'status' => true,
+            'message' => 'Membership fetched successfully',
+            'data' => [
+                'membership' => $membership,
+                'jenis_memberships' => $membership->jenisMemberships
+            ]
+        ]);
     }
 
     /**

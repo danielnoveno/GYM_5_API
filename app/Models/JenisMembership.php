@@ -13,15 +13,19 @@ class JenisMembership extends Model
     protected $primaryKey = 'id_jenis_membership';
 
     protected $fillable = [
-        'nama_jenis_membership',
-        'harga_membership',
-        'jadwal',
-        'durasi',
-        'deskripsi',
+        'membership_title',
+        'type',
+        'description',
+        'price',
+        'total',
     ];
 
-    public function memberships()
+    protected $casts = [
+        'description' => 'array',
+    ];
+
+    public function membership()
     {
-        return $this->hasMany(Membership::class, 'id_jenis_membership');
+        return $this->belongsTo(Membership::class, 'membership_title', 'title');
     }
 }

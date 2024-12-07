@@ -16,7 +16,7 @@ class JenisMembershipController extends Controller
             $query = JenisMembership::query();
 
             if ($request->has('search')) {
-                $query->where('nama_jenis_membership', 'like', '%' . $request->search . '%');
+                $query->where('type', 'like', '%' . $request->search . '%');
             }
 
             $jenisMemberships = $query->get();
@@ -41,16 +41,14 @@ class JenisMembershipController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validasi input
             $validated = $request->validate([
-                'nama_jenis_membership' => 'required|string|max:255',
-                'harga_membership' => 'required|numeric',
-                'jadwal' => 'required|string|max:255',
-                'durasi' => 'required|integer',
-                'deskripsi' => 'required|string',
+                'membership_title' => 'required|string|exists:memberships,title',
+                'type' => 'required|string|unique:jenis_memberships,type|max:255',
+                'description' => 'required|array',
+                'price' => 'required|numeric',
+                'total' => 'required|integer',
             ]);
 
-            // Membuat data jenis membership baru
             $jenisMembership = JenisMembership::create($validated);
 
             return response()->json([
@@ -101,13 +99,12 @@ class JenisMembershipController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // Validasi input
             $validated = $request->validate([
-                'nama_jenis_membership' => 'required|string|max:255',
-                'harga_membership' => 'required|numeric',
-                'jadwal' => 'required|string|max:255',
-                'durasi' => 'required|integer',
-                'deskripsi' => 'required|string',
+                'membership_title' => 'sometimes|string|exists:memberships,title',
+                'type' => 'sometimes|string|unique:jenis_memberships,type,' . $id . '|max:255',
+                'description' => 'sometimes|array',
+                'price' => 'sometimes|numeric',
+                'total' => 'sometimes|integer',
             ]);
 
             $jenisMembership = JenisMembership::findOrFail($id);
