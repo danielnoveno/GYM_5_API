@@ -12,8 +12,7 @@ class AlatGym extends Model
     protected $primaryKey = 'id_alat';
     protected $fillable = [
         'nama_alat',
-        'kategori',
-        'status',
+        'deskripsi',
         'harga',
     ];
 }

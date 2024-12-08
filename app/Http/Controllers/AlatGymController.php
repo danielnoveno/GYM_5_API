@@ -44,8 +44,7 @@ class AlatGymController extends Controller
         try {
             $validated = $request->validate([
                 'nama_alat' => 'required|string',
-                'kategori' => 'required|string',
-                'status' => 'required|in:available,unavailable',
+                'deskripsi' => 'required|string',
                 'harga' => 'required|numeric',
             ]);
 
@@ -102,8 +101,7 @@ class AlatGymController extends Controller
             $data = AlatGym::findOrFail($id);
             $validated = $request->validate([
                 'nama_alat' => 'sometimes|required|string',
-                'kategori' => 'sometimes|required|string',
-                'status' => 'sometimes|required|in:available,unavailable',
+                'deskripsi' => 'sometimes|required|string',
                 'harga' => 'sometimes|required|numeric',
             ]);
 

@@ -9,18 +9,25 @@ class PersonalTrainer extends Model
 {
     use HasFactory;
 
-    protected $table = 'personal_trainers';
+    use HasFactory;
 
-    protected $primaryKey = 'id_paket_personal_trainer';
+    protected $table = 'trainers'; 
+
+    protected $primaryKey = 'id'; 
 
     protected $fillable = [
-        'nama_paket',
-        'harga',
-        'deskripsi'
+        'title',
+        'duration',
+        'image_path',
+        'email',
+        'description',
+        'specialization',
+        'price',
+        'id_paket_personal_trainer',
     ];
 
-    public function trainers()
+    public function personalTrainer()
     {
-        return $this->hasMany(Trainer::class, 'id_paket_personal_trainer');
+        return $this->belongsTo(PersonalTrainer::class, 'id_paket_personal_trainer');
     }
 }

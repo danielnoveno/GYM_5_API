@@ -11,8 +11,7 @@ return new class extends Migration
         Schema::create('alat_gyms', function (Blueprint $table) {
             $table->id('id_alat');
             $table->string('nama_alat');
-            $table->string('kategori');
-            $table->enum('status', ['available', 'unavailable']);
+            $table->string('deskripsi');
             $table->decimal('harga', 8, 2);
             $table->timestamps();
         });
