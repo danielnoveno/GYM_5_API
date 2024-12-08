@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\KelasOlahraga;
-use App\Models\Coach;
 use Illuminate\Http\Request;
 
 class KelasOlahragaController extends Controller
@@ -16,10 +15,10 @@ class KelasOlahragaController extends Controller
         try {
             $query = KelasOlahraga::query();
 
-            // Pencarian berdasarkan nama_olahraga dan deskripsi (optional)
+            // Pencarian berdasarkan judul dan deskripsi (optional)
             if ($request->has('search')) {
                 $search = $request->input('search');
-                $query->where('nama_olahraga', 'like', "%$search%")
+                $query->where('judul', 'like', "%$search%")
                     ->orWhere('deskripsi', 'like', "%$search%");
             }
 
@@ -47,12 +46,14 @@ class KelasOlahragaController extends Controller
         try {
             // Validasi input
             $validated = $request->validate([
-                'nama_olahraga' => 'required|string|max:255',
-                'kapasitas' => 'required|integer',
-                'id_jadwal' => 'required|exists:jadwals,id_jadwal',
-                'id_ruangan' => 'required|exists:ruangans,id_ruangan',
-                'id_coach' => 'required|exists:coaches,id_coach',
-                'deskripsi' => 'nullable|string',
+                'judul' => 'required|string|max:255',
+                'harga' => 'required|string|max:255',
+                'image_path' => 'required|string|max:255',
+                'deskripsi' => 'nullable|array',
+                // 'id_jadwal' => 'required|exists:jadwals,id_jadwal',
+                // 'id_ruangan' => 'required|exists:ruangans,id_ruangan',
+                // 'id_coach' => 'required|exists:coaches,id_coach',
+                'kelas' => 'nullable|array',
             ]);
 
             // Menyimpan kelas olahraga
@@ -110,12 +111,14 @@ class KelasOlahragaController extends Controller
 
             // Validasi input
             $validated = $request->validate([
-                'nama_olahraga' => 'required|string|max:255',
-                'kapasitas' => 'required|integer',
-                'id_jadwal' => 'required|exists:jadwals,id_jadwal',
-                'id_ruangan' => 'required|exists:ruangans,id_ruangan',
-                'id_coach' => 'required|exists:coaches,id_coach',
-                'deskripsi' => 'nullable|string',
+                'judul' => 'required|string|max:255',
+                'harga' => 'required|string|max:255',
+                'image_path' => 'required|string|max:255',
+                'deskripsi' => 'nullable|array',
+                // 'id_jadwal' => 'required|exists:jadwals,id_jadwal',
+                // 'id_ruangan' => 'required|exists:ruangans,id_ruangan',
+                // 'id_coach' => 'required|exists:coaches,id_coach',
+                'kelas' => 'nullable|array',
             ]);
 
             // Update kelas olahraga

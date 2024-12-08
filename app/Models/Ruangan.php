@@ -16,6 +16,7 @@ class Ruangan extends Model
     protected $fillable = [
         'id_ruangan',
         'kapasitas',
+        'nama_ruangan',
     ];
 
     public function kelasOlahraga()

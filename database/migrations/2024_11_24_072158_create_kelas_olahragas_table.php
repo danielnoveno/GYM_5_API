@@ -10,12 +10,14 @@ return new class extends Migration
     {
         Schema::create('kelas_olahragas', function (Blueprint $table) {
             $table->id('id_kelas');
-            $table->string('nama_olahraga');
-            $table->integer('kapasitas');
-            $table->unsignedBigInteger('id_jadwal');
-            $table->unsignedBigInteger('id_ruangan');
-            $table->unsignedBigInteger('id_coach');
-            $table->text('deskripsi');
+            $table->string('judul');
+            $table->string('harga');
+            $table->string('image_path');
+            $table->json('deskripsi');
+            $table->unsignedBigInteger('id_jadwal')->nullable();
+            $table->unsignedBigInteger('id_ruangan')->nullable();
+            $table->unsignedBigInteger('id_coach')->nullable();
+            $table->json('kelas');
             $table->timestamps();
 
             $table->foreign('id_jadwal')->references('id_jadwal')->on('jadwals')->onDelete('cascade');

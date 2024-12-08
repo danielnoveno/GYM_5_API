@@ -62,20 +62,16 @@ class JadwalController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validasi input
             $validated = $request->validate([
                 'tanggal' => 'required|date',
-                'bulan' => 'required|integer',
-                'tahun' => 'required|integer',
                 'waktu' => 'required|date_format:H:i',
                 'id_ruangan' => 'required|exists:ruangans,id_ruangan',
                 'id_trainer' => 'required|exists:trainers,id_trainer',
+                'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
             ]);
 
-            // Menyimpan jadwal
             $jadwal = Jadwal::create($validated);
 
-            // Menyinkronkan kelas olahraga jika ada
             if ($request->has('kelas_olahragas')) {
                 $jadwal->kelasOlahraga()->sync($request->kelas_olahragas);
             }
@@ -156,17 +152,15 @@ class JadwalController extends Controller
             // Validasi input
             $validated = $request->validate([
                 'tanggal' => 'required|date',
-                'bulan' => 'required|integer',
-                'tahun' => 'required|integer',
                 'waktu' => 'required|date_format:H:i',
                 'id_ruangan' => 'required|exists:ruangans,id_ruangan',
                 'id_trainer' => 'required|exists:trainers,id_trainer',
+                'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
             ]);
 
             $jadwal = Jadwal::findOrFail($id);
             $jadwal->update($validated);
 
-            // Menyinkronkan kelas olahraga jika ada
             if ($request->has('kelas_olahragas')) {
                 $jadwal->kelasOlahraga()->sync($request->kelas_olahragas);
             }
@@ -221,7 +215,6 @@ class JadwalController extends Controller
         try {
             $query = Jadwal::query();
 
-            // Filter berdasarkan tanggal, bulan, tahun
             if ($request->has('tanggal')) {
                 $query->whereDate('tanggal', $request->tanggal);
             }

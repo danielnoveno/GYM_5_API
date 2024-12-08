@@ -15,10 +15,11 @@ class RuanganController extends Controller
         try {
             $query = Ruangan::query();
 
-            // Pencarian berdasarkan kapasitas
+            // Pencarian berdasarkan kapasitas atau nama ruangan
             if ($request->has('search')) {
                 $search = $request->input('search');
-                $query->where('kapasitas', 'like', "%$search%");
+                $query->where('kapasitas', 'like', "%$search%")
+                    ->orWhere('nama_ruangan', 'like', "%$search%");
             }
 
             $ruangans = $query->get();
@@ -46,6 +47,7 @@ class RuanganController extends Controller
             // Validasi input
             $validated = $request->validate([
                 'kapasitas' => 'required|integer',
+                'nama_ruangan' => 'required|string|max:255',
             ]);
 
             // Menyimpan ruangan
@@ -102,6 +104,7 @@ class RuanganController extends Controller
             // Validasi input
             $validated = $request->validate([
                 'kapasitas' => 'required|integer',
+                'nama_ruangan' => 'required|string|max:255',
             ]);
 
             $ruangan = Ruangan::findOrFail($id);
