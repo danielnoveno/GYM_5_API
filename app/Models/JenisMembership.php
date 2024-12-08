@@ -10,7 +10,7 @@ class JenisMembership extends Model
     use HasFactory;
 
     protected $table = 'jenis_memberships';
-    protected $primaryKey = 'id_jenis_membership';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'membership_title',

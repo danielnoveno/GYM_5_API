@@ -43,7 +43,7 @@ class JenisMembershipController extends Controller
         try {
             $validated = $request->validate([
                 'membership_title' => 'required|string|exists:memberships,title',
-                'type' => 'required|string|unique:jenis_memberships,type|max:255',
+                'type' => 'required|string|max:255',
                 'description' => 'required|array',
                 'price' => 'required|numeric',
                 'total' => 'required|integer',
@@ -101,7 +101,7 @@ class JenisMembershipController extends Controller
         try {
             $validated = $request->validate([
                 'membership_title' => 'sometimes|string|exists:memberships,title',
-                'type' => 'sometimes|string|unique:jenis_memberships,type,' . $id . '|max:255',
+                'type' => 'sometimes|string|max:255',
                 'description' => 'sometimes|array',
                 'price' => 'sometimes|numeric',
                 'total' => 'sometimes|integer',

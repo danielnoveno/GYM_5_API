@@ -13,16 +13,13 @@ return new class extends Migration
             $table->string('membership_title');
             $table->string('type');
             $table->json('description');
-            $table->string('price');
+            $table->decimal('price', 15, 2);
             $table->string('total');
             $table->timestamps();
-
-            // $table->foreign('membership_title')
-            //     ->references('title')
-            //     ->on('memberships')
-            //     ->onDelete('cascade');
         });
     }
+
+
 
     public function down()
     {

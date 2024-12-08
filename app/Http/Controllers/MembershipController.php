@@ -38,7 +38,7 @@ class MembershipController extends Controller
             'message' => 'Membership fetched successfully',
             'data' => [
                 'membership' => $membership,
-                'jenis_memberships' => $membership->jenisMemberships
+                // 'jenis_memberships' => $membership->jenisMemberships
             ]
         ]);
     }
