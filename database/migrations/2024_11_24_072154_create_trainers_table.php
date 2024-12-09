@@ -14,10 +14,10 @@ return new class extends Migration
             $table->integer('umur');
             $table->integer('lama_pengalaman');
             $table->enum('spesialis', ['Fitness', 'Yoga', 'Aerobics', 'Strength Training']);
-            $table->unsignedBigInteger('id_paket_personal_trainer');
+            // $table->unsignedBigInteger('id_paket_personal_trainer');
             $table->timestamps();
 
-            $table->foreign('id_paket_personal_trainer')->references('id_paket_personal_trainer')->on('personal_trainers')->onDelete('cascade');
+            // $table->foreign('id_paket_personal_trainer')->references('id_paket_personal_trainer')->on('personal_trainers')->onDelete('cascade');
         });
     }
 

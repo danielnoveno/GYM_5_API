@@ -15,6 +15,7 @@ use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\ActivityController;
 use App\Models\Riwayat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +44,7 @@ Route::resource('riwayat', RiwayatController::class);
 Route::resource('ruangan', RuanganController::class);
 Route::resource('trainer', TrainerController::class);
 Route::resource('transaksi', TransaksiController::class);
+Route::resource('activity', ActivityController::class);
 
 Route::get('/getImageUrl/{imageName}', [MembershipController::class, 'getImageUrl']);
 

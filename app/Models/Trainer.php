@@ -18,14 +18,14 @@ class Trainer extends Model
         'umur',
         'lama_pengalaman',
         'spesialis',
-        'id_paket_personal_trainer'
+        // 'id_paket_personal_trainer'
     ];
 
     /**
      * Relasi ke PersonalTrainer.
      */
-    public function personalTrainer()
-    {
-        return $this->belongsTo(PersonalTrainer::class, 'id_paket_personal_trainer');
-    }
+    // public function personalTrainer()
+    // {
+    //     return $this->belongsTo(PersonalTrainer::class, 'id_paket_personal_trainer');
+    // }
 }

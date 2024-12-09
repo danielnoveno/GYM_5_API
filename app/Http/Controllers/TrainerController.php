@@ -49,7 +49,7 @@ class TrainerController extends Controller
                 'umur' => 'required|integer',
                 'lama_pengalaman' => 'required|integer',
                 'spesialis' => 'required|in:Fitness,Yoga,Aerobics,Strength Training',
-                'id_paket_personal_trainer' => 'required|exists:personal_trainers,id_paket_personal_trainer',
+                // 'id_paket_personal_trainer' => 'required|exists:personal_trainers,id_paket_personal_trainer',
             ]);
 
             // Membuat trainer baru
@@ -119,7 +119,7 @@ class TrainerController extends Controller
                     'umur' => 'sometimes|required|integer',
                     'lama_pengalaman' => 'sometimes|required|integer',
                     'spesialis' => 'sometimes|required|in:Fitness,Yoga,Aerobics,Strength Training',
-                    'id_paket_personal_trainer' => 'sometimes|required|exists:personal_trainers,id_paket_personal_trainer',
+                    // 'id_paket_personal_trainer' => 'sometimes|required|exists:personal_trainers,id_paket_personal_trainer',
                 ]);
 
                 // Update trainer
