@@ -45,10 +45,13 @@ class TrainerController extends Controller
         try {
             // Validasi data input
             $validated = $request->validate([
-                'nama' => 'required|string|max:255',
-                'umur' => 'required|integer',
-                'lama_pengalaman' => 'required|integer',
-                'spesialis' => 'required|in:Fitness,Yoga,Aerobics,Strength Training',
+                'title' => 'required|string|max:255',
+                'duration' => 'required|string|max:255',
+                'imagePath' => 'required|string|max:255',
+                'email' => 'required|string|max:255',
+                'description' => 'required|string|max:255',
+                'price' => 'required|numeric',
+                'specialization' => 'required|string|max:255',
                 'id_paket_personal_trainer' => 'required|exists:personal_trainers,id_paket_personal_trainer',
             ]);
 
@@ -115,11 +118,14 @@ class TrainerController extends Controller
             if ($trainer) {
                 // Validasi data input
                 $validated = $request->validate([
-                    'nama' => 'sometimes|required|string|max:255',
-                    'umur' => 'sometimes|required|integer',
-                    'lama_pengalaman' => 'sometimes|required|integer',
-                    'spesialis' => 'sometimes|required|in:Fitness,Yoga,Aerobics,Strength Training',
-                    'id_paket_personal_trainer' => 'sometimes|required|exists:personal_trainers,id_paket_personal_trainer',
+                    'title' => 'required|string|max:255',
+                    'duration' => 'required|string|max:255',
+                    'imagePath' => 'required|string|max:255',
+                    'email' => 'required|string|max:255',
+                    'description' => 'required|string|max:255',
+                    'price' => 'required|numeric',
+                    'specialization' => 'required|in:Fitness,Yoga,Aerobics,Strength Training',
+                    'id_paket_personal_trainer' => 'required|exists:personal_trainers,id_paket_personal_trainer',
                 ]);
 
                 // Update trainer

@@ -14,10 +14,13 @@ class Trainer extends Model
     protected $primaryKey = 'id_trainer';
 
     protected $fillable = [
-        'nama',
-        'umur',
-        'lama_pengalaman',
-        'spesialis',
+        'title',
+        'duration',
+        'imagePath',
+        'email',
+        'description',
+        'specialization',
+        'price',
         'id_paket_personal_trainer'
     ];
 
