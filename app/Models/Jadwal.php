@@ -13,11 +13,10 @@ class Jadwal extends Model
     protected $primaryKey = 'id_jadwal';
     protected $fillable = [
         'tanggal',
-        'bulan',
-        'tahun',
         'waktu',
         'id_ruangan',
         'id_trainer',
+        'id_pelanggan',
     ];
 
     public function ruangan()
@@ -29,6 +28,7 @@ class Jadwal extends Model
     {
         return $this->belongsTo(Trainer::class, 'id_trainer');
     }
+
     public function kelasOlahraga()
     {
         return $this->belongsToMany(KelasOlahraga::class, 'jadwal_kelas', 'id_jadwal', 'id_kelas');

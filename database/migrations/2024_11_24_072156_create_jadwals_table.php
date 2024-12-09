@@ -11,17 +11,18 @@ return new class extends Migration
         Schema::create('jadwals', function (Blueprint $table) {
             $table->id('id_jadwal');
             $table->date('tanggal');
-            $table->integer('bulan');
-            $table->integer('tahun');
             $table->time('waktu');
             $table->unsignedBigInteger('id_ruangan');
             $table->unsignedBigInteger('id_trainer');
+            $table->unsignedBigInteger('id_pelanggan');
             $table->timestamps();
 
             $table->foreign('id_ruangan')->references('id_ruangan')->on('ruangans')->onDelete('cascade');
             $table->foreign('id_trainer')->references('id_trainer')->on('trainers')->onDelete('cascade');
+            $table->foreign('id_pelanggan')->references('id_pelanggan')->on('pelanggans')->onDelete('cascade');
         });
     }
+
 
     public function down()
     {

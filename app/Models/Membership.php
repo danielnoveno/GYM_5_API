@@ -12,21 +12,19 @@ class Membership extends Model
     protected $table = 'memberships';
     protected $primaryKey = 'id_membership';
     protected $fillable = [
-        'id_pelanggan',
-        'id_jenis_membership',
-        'jenis_membership',
-        'tanggal_mulai',
-        'tanggal_berakhir',
-        'status'
+        'title',
+        'image',
+        'duration',
     ];
 
+    // Relasi ke pelanggan (opsional, jika ada)
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
     }
 
-    public function jenisMembership()
+    public function jenisMemberships()
     {
-        return $this->belongsTo(JenisMembership::class, 'id_jenis_membership');
+        return $this->hasMany(JenisMembership::class, 'membership_title', 'title');
     }
 }

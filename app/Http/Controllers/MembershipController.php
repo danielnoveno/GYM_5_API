@@ -1,76 +1,141 @@
 <?php
 
-// app/Http/Controllers/MembershipController.php
-
 namespace App\Http\Controllers;
 
 use App\Models\Membership;
-use App\Models\JenisMembership;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MembershipController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Menampilkan daftar semua memberships.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index()
     {
-        $query = Membership::query();
-
-        if ($request->has('search')) {
-            $query->whereHas('jenisMembership', function ($q) use ($request) {
-                $q->where('nama_jenis_membership', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        $memberships = $query->with(['pelanggan', 'jenisMembership'])->get();
-
+        $memberships = Membership::all();
         return response()->json($memberships);
     }
 
+    /**
+     * Menampilkan detail membership berdasarkan ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($id)
+    {
+        $membership = Membership::with('jenisMemberships')->find($id);
+
+        if (!$membership) {
+            return response()->json(['message' => 'Membership not found'], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Membership fetched successfully',
+            'data' => [
+                'membership' => $membership,
+                // 'jenis_memberships' => $membership->jenisMemberships
+            ]
+        ]);
+    }
+
+    /**
+     * Membuat membership baru.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
-            'id_jenis_membership' => 'required|exists:jenis_memberships,id_jenis_membership',
-            'jenis_membership' => 'required|string|max:255',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_berakhir' => 'required|date',
-            'status' => 'required|string|max:255',
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'image' => 'required|string|max:255',
+            'duration' => 'required|string|max:255',
         ]);
 
-        $membership = Membership::create($validated);
+        $relativePath = str_replace('\\', '/', $request->image);
+
+        $membership = Membership::create([
+            'title' => $request->title,
+            'image' => $relativePath,
+            'duration' => $request->duration,
+        ]);
 
         return response()->json($membership, 201);
     }
 
-    public function show($id)
-    {
-        $membership = Membership::with(['pelanggan', 'jenisMembership'])->findOrFail($id);
 
-        return response()->json($membership);
-    }
-
+    /**
+     * Mengupdate data membership yang sudah ada.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, $id)
     {
-        $membership = Membership::findOrFail($id);
+        $membership = Membership::find($id);
 
-        $validated = $request->validate([
-            'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
-            'id_jenis_membership' => 'required|exists:jenis_memberships,id_jenis_membership',
-            'jenis_membership' => 'required|string|max:255',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_berakhir' => 'required|date',
-            'status' => 'required|string|max:255',
+        if (!$membership) {
+            return response()->json(['message' => 'Membership not found'], 404);
+        }
+
+        // Validasi input
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'image' => 'nullable|string|max:255',
+            'duration' => 'required|string|max:255',  // duration sebagai string
         ]);
 
-        $membership->update($validated);
+        // Mengupdate data membership
+        $membership->update([
+            'title' => $request->title,
+            'image' => $request->image,
+            'duration' => $request->duration,  // Mengupdate duration sebagai string
+        ]);
 
+        // Mengembalikan response berupa data membership yang sudah diupdate
         return response()->json($membership);
     }
 
+    /**
+     * Menghapus membership berdasarkan ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($id)
     {
-        $membership = Membership::findOrFail($id);
+        $membership = Membership::find($id);
+
+        if (!$membership) {
+            return response()->json(['message' => 'Membership not found'], 404);
+        }
+
+        // Menghapus membership
         $membership->delete();
 
-        return response()->json(null, 204);
+        // Mengembalikan response sukses
+        return response()->json(['message' => 'Membership deleted successfully']);
+    }
+
+    /**
+     * Mengambil URL gambar menggunakan Storage::url
+     *
+     * @param string $imageName
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getImageUrl($imageName)
+    {
+        $imagePath = public_path($imageName);
+        if (file_exists($imagePath)) {
+            $url = asset($imageName);
+            return response()->json(['url' => $url]);
+        }
+        return response()->json(['message' => 'Image not found'], 404);
     }
 }

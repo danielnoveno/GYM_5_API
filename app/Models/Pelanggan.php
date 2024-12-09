@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 
 class Pelanggan extends Model
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory;
 
     protected $table = 'pelanggans';
     protected $primaryKey = 'id_pelanggan';
@@ -19,9 +20,10 @@ class Pelanggan extends Model
         'alamat',
         'no_telepon',
         'email',
+        'password',
         'tanggal_daftar',
-        'id_jadwal'
     ];
+
 
     public function membership()
     {
