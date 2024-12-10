@@ -14,9 +14,15 @@ class Riwayat extends Model
     protected $primaryKey = 'id_riwayat';
 
     protected $fillable = [
+        'id_pelanggan',
         'tanggal_riwayat',
         'jenis_layanan',
         'total_harga',
+        'image_path',
     ];
 
+    public function pelanggan()
+    {
+        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
+    }
 }

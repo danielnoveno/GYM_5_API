@@ -12,11 +12,14 @@ return new class extends Migration
             $table->engine = 'InnoDB';
 
             $table->id('id_riwayat');
+            $table->unsignedBigInteger('id_pelanggan');
             $table->date('tanggal_riwayat');
             $table->string('jenis_layanan');
             $table->double('total_harga');
+            $table->string('image_path');
             $table->timestamps();
 
+            $table->foreign('id_pelanggan')->references('id_pelanggan')->on('pelanggans')->onDelete('cascade');
         });
     }
 };
