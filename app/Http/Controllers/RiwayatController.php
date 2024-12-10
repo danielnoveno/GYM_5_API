@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Riwayat;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class RiwayatController extends Controller
 {
@@ -27,7 +28,7 @@ class RiwayatController extends Controller
     // Store a newly created resource in storage
     public function store(Request $request)
     {
-        
+
         $request->validate([
             'tanggal_riwayat' => 'required|date',
             'jenis_layanan' => 'required|string',
