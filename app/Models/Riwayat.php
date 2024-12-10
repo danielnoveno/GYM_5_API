@@ -14,25 +14,15 @@ class Riwayat extends Model
     protected $primaryKey = 'id_riwayat';
 
     protected $fillable = [
-        'id_detail_transaksi',
-        'id_layanan',
+        'id_pelanggan',
         'tanggal_riwayat',
         'jenis_layanan',
+        'total_harga',
+        'image_path',
     ];
 
-    /**
-     * Relasi ke DetailTransaksi.
-     */
-    public function detailTransaksi()
+    public function pelanggan()
     {
-        return $this->belongsTo(DetailTransaksi::class, 'id_detail_transaksi');
-    }
-
-    /**
-     * Relasi ke Layanan.
-     */
-    public function layanan()
-    {
-        return $this->belongsTo(Layanan::class, 'id_layanan');
+        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
     }
 }
