@@ -8,176 +8,84 @@ use Illuminate\Http\Request;
 class RiwayatController extends Controller
 {
     /**
-     * Display a listing of the history records.
+     * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        try {
-            $query = Riwayat::query();
-
-            // Pencarian berdasarkan ID transaksi
-            if ($request->has('search')) {
-                $search = $request->search;
-                $query->whereHas('detailTransaksi', function ($q) use ($search) {
-                    $q->where('id_transaksi', 'like', "%{$search}%");
-                });
-            }
-
-            $riwayat = $query->with(['detailTransaksi', 'layanan'])->get();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Riwayat fetched successfully',
-                'data' => $riwayat
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $riwayats = Riwayat::all();
+        return response()->json($riwayats, 200);
     }
 
     /**
-     * Display the specified history record.
-     */
-    public function show($id)
-    {
-        try {
-            $riwayat = Riwayat::with(['detailTransaksi', 'layanan'])->find($id);
-
-            if ($riwayat) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Riwayat found',
-                    'data' => $riwayat
-                ], 200);
-            }
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Riwayat not found'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Store a newly created history record.
+     * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        try {
-            // Validasi data input
-            $validated = $request->validate([
-                'id_detail_transaksi' => 'required|exists:detail_transaksis,id_detail_transaksi',
-                'id_layanan' => 'required|exists:layanans,id_layanan',
-                'tanggal_riwayat' => 'required|date',
-                'jenis_layanan' => 'required|string',
-            ]);
+        $request->validate([
+            'tanggal_riwayat' => 'required|date',
+            'jenis_layanan' => 'required|string|max:255',
+            'total_harga' => 'required|numeric',
+        ]);
 
-            // Membuat riwayat baru
-            $riwayat = Riwayat::create($validated);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Riwayat created successfully',
-                'data' => $riwayat
-            ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error storing data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $riwayat = Riwayat::create($request->all());
+        return response()->json([
+            'message' => 'Riwayat created successfully',
+            'data' => $riwayat,
+        ], 201);
     }
 
     /**
-     * Update the specified history record.
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        $riwayat = Riwayat::find($id);
+
+        if (!$riwayat) {
+            return response()->json(['message' => 'Riwayat not found'], 404);
+        }
+
+        return response()->json($riwayat, 200);
+    }
+
+    /**
+     * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
     {
-        try {
-            $riwayat = Riwayat::find($id);
+        $riwayat = Riwayat::find($id);
 
-            if ($riwayat) {
-                // Validasi data input
-                $validated = $request->validate([
-                    'id_detail_transaksi' => 'required|exists:detail_transaksis,id_detail_transaksi',
-                    'id_layanan' => 'required|exists:layanans,id_layanan',
-                    'tanggal_riwayat' => 'required|date',
-                    'jenis_layanan' => 'required|string',
-                ]);
-
-                // Update riwayat
-                $riwayat->update($validated);
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Riwayat updated successfully',
-                    'data' => $riwayat
-                ], 200);
-            }
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Riwayat not found'
-            ], 404);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error updating data',
-                'error' => $e->getMessage()
-            ], 500);
+        if (!$riwayat) {
+            return response()->json(['message' => 'Riwayat not found'], 404);
         }
+
+        $request->validate([
+            'tanggal_riwayat' => 'sometimes|date',
+            'jenis_layanan' => 'sometimes|string|max:255',
+            'total_harga' => 'sometimes|numeric',
+        ]);
+
+        $riwayat->update($request->all());
+
+        return response()->json([
+            'message' => 'Riwayat updated successfully',
+            'data' => $riwayat,
+        ], 200);
     }
 
     /**
-     * Remove the specified history record.
+     * Remove the specified resource from storage.
      */
     public function destroy($id)
     {
-        try {
-            $riwayat = Riwayat::find($id);
+        $riwayat = Riwayat::find($id);
 
-            if ($riwayat) {
-                $riwayat->delete();
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Riwayat deleted successfully'
-                ], 200);
-            }
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Riwayat not found'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error deleting data',
-                'error' => $e->getMessage()
-            ], 500);
+        if (!$riwayat) {
+            return response()->json(['message' => 'Riwayat not found'], 404);
         }
+
+        $riwayat->delete();
+
+        return response()->json(['message' => 'Riwayat deleted successfully'], 200);
     }
 }
