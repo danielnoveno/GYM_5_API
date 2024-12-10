@@ -22,7 +22,7 @@ class KelasOlahragaController extends Controller
                     ->orWhere('deskripsi', 'like', "%$search%");
             }
 
-            $kelasOlahraga = $query->with(['coach', 'ruangan', 'jadwal'])->get();
+            $kelasOlahraga = $query->get();
 
             return response()->json([
                 'status' => true,
@@ -50,9 +50,6 @@ class KelasOlahragaController extends Controller
                 'harga' => 'required|string|max:255',
                 'image_path' => 'required|string|max:255',
                 'deskripsi' => 'nullable|array',
-                // 'id_jadwal' => 'required|exists:jadwals,id_jadwal',
-                // 'id_ruangan' => 'required|exists:ruangans,id_ruangan',
-                // 'id_coach' => 'required|exists:coaches,id_coach',
                 'kelas' => 'nullable|array',
             ]);
 
@@ -115,9 +112,6 @@ class KelasOlahragaController extends Controller
                 'harga' => 'required|string|max:255',
                 'image_path' => 'required|string|max:255',
                 'deskripsi' => 'nullable|array',
-                // 'id_jadwal' => 'required|exists:jadwals,id_jadwal',
-                // 'id_ruangan' => 'required|exists:ruangans,id_ruangan',
-                // 'id_coach' => 'required|exists:coaches,id_coach',
                 'kelas' => 'nullable|array',
             ]);
 

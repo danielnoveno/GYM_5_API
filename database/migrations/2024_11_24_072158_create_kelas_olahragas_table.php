@@ -14,15 +14,8 @@ return new class extends Migration
             $table->string('harga');
             $table->string('image_path');
             $table->json('deskripsi');
-            $table->unsignedBigInteger('id_jadwal')->nullable();
-            $table->unsignedBigInteger('id_ruangan')->nullable();
-            $table->unsignedBigInteger('id_coach')->nullable();
             $table->json('kelas');
             $table->timestamps();
-
-            $table->foreign('id_jadwal')->references('id_jadwal')->on('jadwals')->onDelete('cascade');
-            $table->foreign('id_ruangan')->references('id_ruangan')->on('ruangans')->onDelete('cascade');
-            $table->foreign('id_coach')->references('id_coach')->on('coaches')->onDelete('cascade');
         });
     }
 

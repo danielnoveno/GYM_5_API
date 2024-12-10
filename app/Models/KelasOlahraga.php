@@ -18,9 +18,9 @@ class KelasOlahraga extends Model
         'harga',
         'image_path',
         'deskripsi',
-        'id_jadwal',
-        'id_ruangan',
-        'id_coach',
+        // 'id_jadwal',
+        // 'id_ruangan',
+        // 'id_coach',
         'kelas',
     ];
 
@@ -29,18 +29,18 @@ class KelasOlahraga extends Model
         'kelas' => 'array',
     ];
 
-    public function jadwal()
-    {
-        return $this->belongsTo(Jadwal::class, 'id_jadwal', 'id_jadwal');
-    }
+    // public function jadwal()
+    // {
+    //     return $this->belongsTo(Jadwal::class, 'id_jadwal', 'id_jadwal');
+    // }
 
-    public function ruangan()
-    {
-        return $this->belongsTo(Ruangan::class, 'id_ruangan', 'id_ruangan');
-    }
+    // public function ruangan()
+    // {
+    //     return $this->belongsTo(Ruangan::class, 'id_ruangan', 'id_ruangan');
+    // }
 
-    public function coach()
-    {
-        return $this->belongsTo(Coach::class, 'id_coach', 'id_coach');
-    }
+    // public function coach()
+    // {
+    //     return $this->belongsTo(Coach::class, 'id_coach', 'id_coach');
+    // }
 }
