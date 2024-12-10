@@ -43,6 +43,7 @@ class AlatGymController extends Controller
     {
         try {
             $validated = $request->validate([
+                'image_path' => 'required|string',
                 'nama_alat' => 'required|string',
                 'deskripsi' => 'required|string',
                 'harga' => 'required|numeric',
@@ -100,6 +101,7 @@ class AlatGymController extends Controller
         try {
             $data = AlatGym::findOrFail($id);
             $validated = $request->validate([
+                'image_path' => 'sometimes|required|string',
                 'nama_alat' => 'sometimes|required|string',
                 'deskripsi' => 'sometimes|required|string',
                 'harga' => 'sometimes|required|numeric',

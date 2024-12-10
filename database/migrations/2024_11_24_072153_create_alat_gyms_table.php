@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('alat_gyms', function (Blueprint $table) {
             $table->id('id_alat');
+            $table->string('image_path');
             $table->string('nama_alat');
             $table->string('deskripsi');
             $table->decimal('harga', 8, 2);
