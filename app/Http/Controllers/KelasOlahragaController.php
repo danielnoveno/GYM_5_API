@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ruangan;
+use App\Models\KelasOlahraga;
 use Illuminate\Http\Request;
 
-class RuanganController extends Controller
+class KelasOlahragaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,21 +13,21 @@ class RuanganController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Ruangan::query();
+            $query = KelasOlahraga::query();
 
-            // Pencarian berdasarkan kapasitas atau nama ruangan
+            // Pencarian berdasarkan judul dan deskripsi (optional)
             if ($request->has('search')) {
                 $search = $request->input('search');
-                $query->where('kapasitas', 'like', "%$search%")
-                    ->orWhere('nama_ruangan', 'like', "%$search%");
+                $query->where('judul', 'like', "%$search%")
+                    ->orWhere('deskripsi', 'like', "%$search%");
             }
 
-            $ruangans = $query->get();
+            $kelasOlahraga = $query->get();
 
             return response()->json([
                 'status' => true,
                 'message' => 'Get successful',
-                'data' => $ruangans
+                'data' => $kelasOlahraga
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -46,17 +46,20 @@ class RuanganController extends Controller
         try {
             // Validasi input
             $validated = $request->validate([
-                'kapasitas' => 'required|integer',
-                'nama_ruangan' => 'required|string|max:255',
+                'judul' => 'required|string|max:255',
+                'harga' => 'required|string|max:255',
+                'image_path' => 'required|string|max:255',
+                'deskripsi' => 'nullable|array',
+                'kelas' => 'nullable|array',
             ]);
 
-            // Menyimpan ruangan
-            $ruangan = Ruangan::create($validated);
+            // Menyimpan kelas olahraga
+            $kelasOlahraga = KelasOlahraga::create($validated);
 
             return response()->json([
                 'status' => true,
                 'message' => 'Create successful',
-                'data' => $ruangan
+                'data' => $kelasOlahraga
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -79,17 +82,17 @@ class RuanganController extends Controller
     public function show($id)
     {
         try {
-            $ruangan = Ruangan::findOrFail($id);
+            $kelasOlahraga = KelasOlahraga::findOrFail($id);
 
             return response()->json([
                 'status' => true,
                 'message' => 'Get successful',
-                'data' => $ruangan
+                'data' => $kelasOlahraga
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Ruangan not found',
+                'message' => 'Kelas olahraga not found',
                 'error' => $e->getMessage()
             ], 404);
         }
@@ -101,21 +104,24 @@ class RuanganController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            $kelasOlahraga = KelasOlahraga::findOrFail($id);
+
             // Validasi input
             $validated = $request->validate([
-                'kapasitas' => 'required|integer',
-                'nama_ruangan' => 'required|string|max:255',
+                'judul' => 'required|string|max:255',
+                'harga' => 'required|string|max:255',
+                'image_path' => 'required|string|max:255',
+                'deskripsi' => 'nullable|array',
+                'kelas' => 'nullable|array',
             ]);
 
-            $ruangan = Ruangan::findOrFail($id);
-
-            // Update ruangan
-            $ruangan->update($validated);
+            // Update kelas olahraga
+            $kelasOlahraga->update($validated);
 
             return response()->json([
                 'status' => true,
                 'message' => 'Update successful',
-                'data' => $ruangan
+                'data' => $kelasOlahraga
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -126,9 +132,9 @@ class RuanganController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Ruangan not found',
+                'message' => 'Something went wrong',
                 'error' => $e->getMessage()
-            ], 404);
+            ], 500);
         }
     }
 
@@ -138,8 +144,8 @@ class RuanganController extends Controller
     public function destroy($id)
     {
         try {
-            $ruangan = Ruangan::findOrFail($id);
-            $ruangan->delete();
+            $kelasOlahraga = KelasOlahraga::findOrFail($id);
+            $kelasOlahraga->delete();
 
             return response()->json([
                 'status' => true,
@@ -148,7 +154,7 @@ class RuanganController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Ruangan not found',
+                'message' => 'Kelas olahraga not found',
                 'error' => $e->getMessage()
             ], 404);
         }

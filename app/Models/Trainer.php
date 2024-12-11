@@ -14,18 +14,21 @@ class Trainer extends Model
     protected $primaryKey = 'id_trainer';
 
     protected $fillable = [
-        'nama',
-        'umur',
-        'lama_pengalaman',
-        'spesialis',
-        'id_paket_personal_trainer'
+        'title',
+        'duration',
+        'imagePath',
+        'email',
+        'description',
+        'specialization',
+        'price',
+        // 'id_paket_personal_trainer'
     ];
 
     /**
      * Relasi ke PersonalTrainer.
      */
-    public function personalTrainer()
-    {
-        return $this->belongsTo(PersonalTrainer::class, 'id_paket_personal_trainer');
-    }
+    // public function personalTrainer()
+    // {
+    //     return $this->belongsTo(PersonalTrainer::class, 'id_paket_personal_trainer');
+    // }
 }
