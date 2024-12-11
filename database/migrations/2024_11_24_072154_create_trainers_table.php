@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('description');
             $table->string('specialization');
             $table->double('price');
-            // Tambahkan foreign key
-            $table->unsignedBigInteger('id_paket_personal_trainer');
+            // // Tambahkan foreign key
+            // $table->unsignedBigInteger('id_paket_personal_trainer');
 
-            $table->foreign('id_paket_personal_trainer')->references('id_paket_personal_trainer')->on('personal_trainers')->onDelete('cascade');
+            // $table->foreign('id_paket_personal_trainer')->references('id_paket_personal_trainer')->on('personal_trainers')->onDelete('cascade');
 
             $table->timestamps();
         });

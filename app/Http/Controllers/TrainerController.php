@@ -52,7 +52,7 @@ class TrainerController extends Controller
                 'description' => 'required|string|max:255',
                 'price' => 'required|numeric',
                 'specialization' => 'required|string|max:255',
-                'id_paket_personal_trainer' => 'required|exists:personal_trainers,id_paket_personal_trainer',
+                // 'id_paket_personal_trainer' => 'required|exists:personal_trainers,id_paket_personal_trainer',
             ]);
 
             // Membuat trainer baru
@@ -125,7 +125,7 @@ class TrainerController extends Controller
                     'description' => 'required|string|max:255',
                     'price' => 'required|numeric',
                     'specialization' => 'required|in:Fitness,Yoga,Aerobics,Strength Training',
-                    'id_paket_personal_trainer' => 'required|exists:personal_trainers,id_paket_personal_trainer',
+                    // 'id_paket_personal_trainer' => 'required|exists:personal_trainers,id_paket_personal_trainer',
                 ]);
 
                 // Update trainer

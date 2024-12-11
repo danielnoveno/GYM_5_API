@@ -21,7 +21,7 @@ class Trainer extends Model
         'description',
         'specialization',
         'price',
-        'id_paket_personal_trainer'
+        // 'id_paket_personal_trainer'
     ];
 
     /**
