@@ -17,6 +17,7 @@ use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\ActivityController;
 use App\Models\Riwayat;
+use App\Http\Controller\ImageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;

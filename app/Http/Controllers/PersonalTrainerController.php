@@ -15,11 +15,13 @@ class PersonalTrainerController extends Controller
         try {
             $query = PersonalTrainer::query();
 
-            // Menambahkan pencarian
+            // Menambahkan pencarian berdasarkan title atau specialization
             if ($request->has('search')) {
-                $query->where('nama_paket', 'like', '%' . $request->search . '%');
+                $query->where('title', 'like', '%' . $request->search . '%')
+                      ->orWhere('specialization', 'like', '%' . $request->search . '%');
             }
 
+            // Menampilkan data dengan paginasi (opsional, bisa disesuaikan)
             $personalTrainers = $query->get();
 
             return response()->json([
@@ -44,12 +46,17 @@ class PersonalTrainerController extends Controller
         try {
             // Validasi data input
             $validated = $request->validate([
-                'nama_paket' => 'required|string|max:255',
-                'harga' => 'required|numeric',
-                'deskripsi' => 'nullable|string|max:255',
+                'title' => 'required|string|max:255',
+                'duration' => 'required|integer',
+                'image_path' => 'nullable|string',
+                'email' => 'required|email|max:255|unique:trainers',
+                'description' => 'nullable|string',
+                'specialization' => 'required|string|max:255',
+                'price' => 'required|numeric',
+                'id_paket_personal_trainer' => 'nullable|exists:trainers,id',
             ]);
 
-            // Membuat data personal trainer baru
+            // Membuat personal trainer baru
             $personalTrainer = PersonalTrainer::create($validated);
 
             return response()->json([
@@ -57,12 +64,6 @@ class PersonalTrainerController extends Controller
                 'message' => 'Personal Trainer created successfully',
                 'data' => $personalTrainer
             ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
@@ -78,26 +79,20 @@ class PersonalTrainerController extends Controller
     public function show($id)
     {
         try {
-            $personalTrainer = PersonalTrainer::find($id);
-
-            if ($personalTrainer) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Personal Trainer found',
-                    'data' => $personalTrainer
-                ], 200);
-            }
+            // Menampilkan detail personal trainer berdasarkan ID
+            $personalTrainer = PersonalTrainer::findOrFail($id);
 
             return response()->json([
-                'status' => false,
-                'message' => 'Personal Trainer not found'
-            ], 404);
+                'status' => true,
+                'message' => 'Personal Trainer fetched successfully',
+                'data' => $personalTrainer
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Error fetching data',
+                'message' => 'Personal Trainer not found',
                 'error' => $e->getMessage()
-            ], 500);
+            ], 404);
         }
     }
 
@@ -107,36 +102,27 @@ class PersonalTrainerController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $personalTrainer = PersonalTrainer::find($id);
+            // Validasi data input
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'duration' => 'required|integer',
+                'image_path' => 'nullable|string',
+                'email' => 'required|email|max:255|unique:trainers,email,' . $id,
+                'description' => 'nullable|string',
+                'specialization' => 'required|string|max:255',
+                'price' => 'required|numeric',
+                'id_paket_personal_trainer' => 'nullable|exists:trainers,id',
+            ]);
 
-            if ($personalTrainer) {
-                // Validasi data input
-                $validated = $request->validate([
-                    'nama_paket' => 'required|string|max:255',
-                    'harga' => 'required|numeric',
-                    'deskripsi' => 'nullable|string|max:255',
-                ]);
-
-                // Update data personal trainer
-                $personalTrainer->update($validated);
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Personal Trainer updated successfully',
-                    'data' => $personalTrainer
-                ], 200);
-            }
+            // Menemukan personal trainer berdasarkan ID dan memperbarui datanya
+            $personalTrainer = PersonalTrainer::findOrFail($id);
+            $personalTrainer->update($validated);
 
             return response()->json([
-                'status' => false,
-                'message' => 'Personal Trainer not found'
-            ], 404);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
+                'status' => true,
+                'message' => 'Personal Trainer updated successfully',
+                'data' => $personalTrainer
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
@@ -152,21 +138,14 @@ class PersonalTrainerController extends Controller
     public function destroy($id)
     {
         try {
-            $personalTrainer = PersonalTrainer::find($id);
-
-            if ($personalTrainer) {
-                $personalTrainer->delete();
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Personal Trainer deleted successfully'
-                ], 200);
-            }
+            // Menemukan personal trainer berdasarkan ID dan menghapusnya
+            $personalTrainer = PersonalTrainer::findOrFail($id);
+            $personalTrainer->delete();
 
             return response()->json([
-                'status' => false,
-                'message' => 'Personal Trainer not found'
-            ], 404);
+                'status' => true,
+                'message' => 'Personal Trainer deleted successfully',
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
